@@ -29,7 +29,6 @@ yarn-error.*
 .env
 .DS_Store
 *.pem
-assets
 
 # local env files
 .env*.local

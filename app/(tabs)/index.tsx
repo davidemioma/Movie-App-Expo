@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import useFetch from "@/hooks/use-fetch";
 import { images } from "@/constants/images";
@@ -14,15 +14,19 @@ import {
   ScrollView,
   View,
   FlatList,
+  RefreshControl,
 } from "react-native";
 
 export default function HomeScreen() {
   const router = useRouter();
 
+  const [refreshing, setRefreshing] = useState(false);
+
   const {
     data: trendingMovies,
     loading: pending,
     error: trendingMoviesError,
+    refetch: refetchTrendingMovies,
   } = useFetch<Array<TrendingMovie> | undefined>({
     fetchAction: getTrendingMovies as any,
     autoFetch: true,
@@ -37,6 +41,17 @@ export default function HomeScreen() {
     autoFetch: true,
   });
 
+  // Handle refreshing
+  const onRefresh = () => {
+    setRefreshing(true);
+
+    refetchTrendingMovies();
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
   return (
     <View className="flex-1 bg-primary">
       <Image className="w-full absolute" source={images.bg} />
@@ -45,6 +60,14 @@ export default function HomeScreen() {
         className="flex-1 px-5"
         contentContainerStyle={{ minHeight: "100%", paddingBottom: 10 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            className="pt-20"
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="white"
+          />
+        }
       >
         <Image className="w-12 h-10 mt-20 mb-5 mx-auto" source={images.logo} />
 
